@@ -3,8 +3,8 @@ import logging
 
 from aiogram import Bot, Dispatcher
 from config_data.config import Config, load_config
-from handlers.general import start_command, help_command
-from handlers.admin import new_creator
+from handlers.general import start_command, help_command, rules_command
+from handlers.admin import new_creator, new_chat
 
 
 # Инициализируем логгер
@@ -19,25 +19,31 @@ async def main():
         format='%(filename)s:%(lineno)d #%(levelname)-8s '
                '[%(asctime)s] - %(name)s - %(message)s')
 
-    # Выводим в консоль информацию о начале запуска бота
-    logger.info('Starting bot')
 
     # Загружаем конфиг в переменную config
     config: Config = load_config()
 
     # Инициализируем бот и диспетчер
+    dp = Dispatcher()
     bot = Bot(token=config.tg_bot.token,
               parse_mode='HTML')
-    dp = Dispatcher()
 
     # Регистриуем роутеры в диспетчере
     dp.include_router(start_command.router)
+    dp.include_routers(rules_command.router)
     dp.include_router(help_command.router)
-    dp.include_router(new_creator.router)
+    dp.include_routers(new_creator.router,
+                       new_chat.router)
 
-    # Пропускаем накопившиеся апдейты и запускаем polling
-    await bot.delete_webhook(drop_pending_updates=True)
-    await dp.start_polling(bot)
+
+    # Выводим в консоль информацию о начале запуска бота
+    logger.info('Starting bot')
+    try:
+        # Пропускаем накопившиеся апдейты и запускаем polling
+        await bot.delete_webhook(drop_pending_updates=True)
+        await dp.start_polling(bot)
+    finally:
+        logger.info("stopped")
 
 
 if __name__ == '__main__':
