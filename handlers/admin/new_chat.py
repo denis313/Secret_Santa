@@ -11,7 +11,7 @@ router.message.filter(~IsPrivate())
 
 @router.message(F.content_type == 'new_chat_members', IsBot())
 async def new_chat(message: Message, bot: Bot):
-    print(message)
     chat_members = await bot.get_chat_administrators(message.chat.id)
-    user_ids = [member.user.id for member in chat_members]  # id creator
-    await bot.send_message(user_ids[0], LEXICON_Creator["new_chat"])
+    for admin in chat_members:
+        if admin.status == "creator":
+            await bot.send_message(admin.user.id, LEXICON_Creator["new_chat"])

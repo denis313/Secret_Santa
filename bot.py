@@ -4,8 +4,8 @@ import logging
 from aiogram import Bot, Dispatcher
 from config_data.config import Config, load_config
 from handlers.general import start_command, help_command, rules_command
-from handlers.admin import new_creator, new_chat
-
+from handlers.admin import for_creator, new_chat
+from handlers.users import join_chat
 
 # Инициализируем логгер
 logger = logging.getLogger(__name__)
@@ -19,7 +19,6 @@ async def main():
         format='%(filename)s:%(lineno)d #%(levelname)-8s '
                '[%(asctime)s] - %(name)s - %(message)s')
 
-
     # Загружаем конфиг в переменную config
     config: Config = load_config()
 
@@ -29,12 +28,12 @@ async def main():
               parse_mode='HTML')
 
     # Регистриуем роутеры в диспетчере
-    dp.include_router(start_command.router)
-    dp.include_routers(rules_command.router)
-    dp.include_router(help_command.router)
-    dp.include_routers(new_creator.router,
+    dp.include_routers(start_command.router,
+                       rules_command.router,
+                       help_command.router)
+    dp.include_routers(for_creator.router,
                        new_chat.router)
-
+    dp.include_routers(join_chat.router)
 
     # Выводим в консоль информацию о начале запуска бота
     logger.info('Starting bot')

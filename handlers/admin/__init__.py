@@ -1,1 +1,1 @@
-from handlers.admin import new_creator, new_chat
+from handlers.admin import for_creator, new_chat
