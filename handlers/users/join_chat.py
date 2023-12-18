@@ -1,16 +1,22 @@
-from aiogram import Router, F, Bot
+from aiogram import Router, F
 from aiogram.types import Message
 
 
-from filters.filter import IsPrivate, IsBot
+from filters.filter import IsPrivate
 from LEXICON.lexicon import LEXICON_user
+
 
 router = Router()
 router.message.filter(~IsPrivate())
 
 
-@router.message(F.content_type == 'new_chat_members', ~IsBot())
-async def new_chat(message: Message):
-    id_new_user = message.from_user.id  # new id_user
-    print(message.chat.id) # id_chat
-    await message.answer(LEXICON_user["user_start"].format(name=message.from_user.first_name))
+@router.message(F.content_type == 'new_chat_members')
+async def on_user_joined(message: Message):
+    new_user = message.new_chat_members[0]  # object
+    id_user = new_user.id  # insert id_user in database
+    id_chat = message.chat.id  # check the database for compliance id_chat
+    print(id_user, '--', id_chat)
+    if new_user.username:
+        await message.answer(LEXICON_user["user_start"].format(name=f'@{new_user.username}'))
+    else:
+        await message.answer(LEXICON_user["user_start"].format(name=new_user.first_name))
