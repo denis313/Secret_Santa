@@ -10,6 +10,7 @@ keyboard_start = InlineKeyboardMarkup(inline_keyboard=[[btn_1, btn_2]])
 read = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text=LEXICON_keyboard["read"][0],
                                                                    callback_data=LEXICON_keyboard["read"][1])]])
 
+# keyboard for user questionnaire
 questionnaire = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(
     text=LEXICON_keyboard["questionnaire"][0],
     callback_data=LEXICON_keyboard["questionnaire"][1])]])
