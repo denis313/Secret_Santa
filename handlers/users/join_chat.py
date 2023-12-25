@@ -15,8 +15,7 @@ async def on_user_joined(message: Message):
     new_user = message.new_chat_members[0]  # object
     id_user = new_user.id  # insert id_user in database
     id_chat = message.chat.id  # check the database for compliance id_chat
-    print(id_user, '--', id_chat)
-    if new_user.username:
+    if True:
         await message.answer(LEXICON_user["user_start"].format(name=f'@{new_user.username}'))
     else:
         await message.answer(LEXICON_user["user_start"].format(name=new_user.first_name))

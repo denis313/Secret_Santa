@@ -15,3 +15,8 @@ read = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text=LEXICON_
 questionnaire = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(
     text=LEXICON_keyboard["questionnaire"][0],
     callback_data=LEXICON_keyboard["questionnaire"][1])]])
+
+
+next_questionnaire = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(
+    text='Следующий вопрос',
+    callback_data='next')]])
