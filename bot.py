@@ -5,7 +5,7 @@ from aiogram import Bot, Dispatcher
 from config_data.config import Config, load_config
 from handlers.general import start_command, help_command, rules_command
 from handlers.admin import for_creator, new_chat
-from handlers.users import join_chat, for_users
+from handlers.users import join_chat, for_users, FSM_questionnaire
 
 # Инициализируем логгер
 logger = logging.getLogger(__name__)
@@ -21,7 +21,6 @@ async def main():
 
     # Загружаем конфиг в переменную config
     config: Config = load_config()
-
     # Инициализируем бот и диспетчер
     dp = Dispatcher()
     bot = Bot(token=config.tg_bot.token,
@@ -34,17 +33,18 @@ async def main():
     dp.include_routers(for_creator.router,
                        new_chat.router)
     dp.include_routers(join_chat.router,
-                       for_users.router)
+                       for_users.router,
+                       FSM_questionnaire.router)
 
-    # Выводим в консоль информацию о начале запуска бота
-    logger.info('Starting bot')
-    try:
-        # Пропускаем накопившиеся апдейты и запускаем polling
-        await bot.delete_webhook(drop_pending_updates=True)
-        await dp.start_polling(bot)
-    finally:
-        logger.info("stopped")
+    # Пропускаем накопившиеся апдейты и запускаем polling
+    await bot.delete_webhook(drop_pending_updates=True)
+    await dp.start_polling(bot)
 
 
 if __name__ == '__main__':
-    asyncio.run(main())
+    # Выводим в консоль информацию о начале запуска бота
+    logger.info('Starting bot')
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        logger.info("stopped")
