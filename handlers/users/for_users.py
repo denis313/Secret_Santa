@@ -26,29 +26,32 @@ async def for_new_user(callback: CallbackQuery):
 @router.message(F.text == LEXICON_keyboard["button"][0])
 async def your_questionnaire(message: Message, bot: Bot):
     data = await db_manager.get_questionnaire_by_id(message.from_user.id)
-    result: UserProfilePhotos = await bot.get_user_profile_photos(message.from_user.id)
-
-    await bot.send_photo(chat_id=message.from_user.id, photo=result.photos[0][0].file_id,
-                         caption=LEXICON["profile"].format(name=data.name,
-                                                           sex=data.sex,
-                                                           clothing_brand=data.clothing_brand,
-                                                           color_palette=data.color_palette,
-                                                           sizes=data.sizes,
-                                                           fashion_style=data.fashion_style,
-                                                           hobby=data.hobby,
-                                                           allergy=data.allergy,
-                                                           salty_or_sweet=data.salty_or_sweet,
-                                                           dream=data.dream),
-                         reply_markup=keyboard_change)
+    print('Profile - ', data)
+    if data:
+        await bot.send_photo(chat_id=message.from_user.id, photo=data.photo,
+                             caption=LEXICON["profile"].format(name=data.name,
+                                                               sex=data.sex,
+                                                               clothing_brand=data.clothing_brand,
+                                                               color_palette=data.color_palette,
+                                                               sizes=data.sizes,
+                                                               fashion_style=data.fashion_style,
+                                                               hobby=data.hobby,
+                                                               allergy=data.allergy,
+                                                               salty_or_sweet=data.salty_or_sweet,
+                                                               dream=data.dream),
+                             reply_markup=keyboard_change)
+    else:
+        await message.answer(text=LEXICON_user["in_the_game"].format(name=message.from_user.first_name),
+                             reply_markup=questionnaire)
 
 
 @router.message(F.text == LEXICON_keyboard["button"][1])
 async def gift_list(message: Message):
     data = await db_manager.get_gift_list(user_id=message.from_user.id)
-    print('Gift_list - ', data)
+    # print('Gift_list - ', data)
     if not data:
         await message.answer(LEXICON["list"], reply_markup=keyboard_new_list)
-        print('Create list')
+        # print('Create list')
     else:
         await message.answer(LEXICON["gift_list"].format(gift_list=data.list), reply_markup=keyboard_change_list)
-        print('Gift List')
+        # print('Gift List')

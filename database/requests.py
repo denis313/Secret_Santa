@@ -1,7 +1,7 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 
-from database.model import User, Questionnaire, GiftList
+from database.model import User, Questionnaire, GiftList, Base
 
 
 class DatabaseManager:

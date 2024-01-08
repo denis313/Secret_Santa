@@ -32,6 +32,7 @@ class Questionnaire(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id = mapped_column(ForeignKey('users.user_id', ondelete='CASCADE'),
                                          nullable=False, unique=True)
+    photo: Mapped[str] = mapped_column()
     name: Mapped[str] = mapped_column()
     sex: Mapped[str] = mapped_column()
     clothing_brand: Mapped[str] = mapped_column()
