@@ -5,6 +5,7 @@ from LEXICON.lexicon import LEXICON_Creator
 from config_data.config import DATABASE_URL
 from database.requests import DatabaseManager
 from filters.filter import IsPrivate, IsBot
+from keyboards.general_keyboards import keyboard_creator
 
 router = Router()
 router.message.filter(~IsPrivate())
@@ -22,5 +23,4 @@ async def new_chat(message: Message, bot: Bot):
             # добавляем user_id, id_chat, creator_id в __tableuser__
             user_data = {"user_id": admin.user.id, "chat_id": id_chat, "creator_id": admin.user.id}
             await db_manager.add_user(user_data)
-            await bot.send_message(admin.user.id, LEXICON_Creator["new_chat"])
-
+            await bot.send_message(admin.user.id, LEXICON_Creator["new_chat"], reply_markup=keyboard_creator)

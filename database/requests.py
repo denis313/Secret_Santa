@@ -42,6 +42,14 @@ class DatabaseManager:
             user = result.scalar()
             return user
 
+    # get all users from db
+    async def get_all_users(self):
+        async with self.async_session() as session:
+            result = await session.execute(select(User))
+            all_users = result.scalars()
+            users = [[user.id, user.user_id, user.chat_id, user.creator_id] for user in all_users]
+            return users
+
     # get questionnaire by user_id from db
     async def get_questionnaire_by_id(self, user_id):
         async with self.async_session() as session:

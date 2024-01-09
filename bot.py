@@ -3,9 +3,9 @@ import logging
 
 from aiogram import Bot, Dispatcher
 from config_data.config import Config, load_config
-from handlers.general import start_command, help_command, rules_command
+from handlers.general import start_command, help_command, rules_command, FSM_questionnaire
 from handlers.admin import for_creator, new_chat
-from handlers.users import join_chat, for_users, FSM_questionnaire
+from handlers.users import join_chat, for_users
 
 # Инициализируем логгер
 logger = logging.getLogger(__name__)
