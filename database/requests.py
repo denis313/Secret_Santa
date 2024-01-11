@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import select, exc
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 
 from database.model import User, Questionnaire, GiftList, Base
@@ -9,10 +9,10 @@ class DatabaseManager:
         self.engine = create_async_engine(dsn, echo=True)
         self.async_session = async_sessionmaker(self.engine, expire_on_commit=False, class_=AsyncSession)
 
-    # async def create_tables(self):
-    #     async with self.async_session() as session:
-    #         async with self.engine.begin() as conn:
-    #             await conn.run_sync(Base.metadata.create_all)
+    async def create_tables(self):
+        async with self.async_session() as session:
+            async with self.engine.begin() as conn:
+                await conn.run_sync(Base.metadata.create_all)
 
     # add new user from db
     async def add_user(self, user_data):
@@ -65,6 +65,19 @@ class DatabaseManager:
             result = await session.execute(g_l)
             gift_list = result.scalar()
             return gift_list
+
+    # update user by user_id from db
+    async def update_user(self, user_id, user_data):
+        async with self.async_session() as session:
+            user = select(User).filter(User.user_id == user_id)
+            result = await session.execute(user)
+            update_user = result.scalar()
+
+            if update_user:
+                for key, value in user_data.items():
+                    setattr(update_user, key, value)
+
+                await session.commit()
 
     # update questionnaire by user_id from db
     async def update_questionnaire(self, user_id, questionnaire_data):

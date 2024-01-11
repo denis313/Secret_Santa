@@ -16,6 +16,7 @@ class User(Base):
     user_id = mapped_column(BigInteger, nullable=False, unique=True)
     chat_id = mapped_column(BigInteger, nullable=False)
     creator_id = mapped_column(BigInteger)
+    game_status = mapped_column(BigInteger)
     id_secret_friend = mapped_column(BigInteger)
 
     questionnaires: Mapped[List["Questionnaire"]] = relationship(back_populates='user')

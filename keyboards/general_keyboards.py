@@ -36,11 +36,11 @@ sizes = ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text='S'),
 
 # keyboard for user
 keyboard_user = (ReplyKeyboardBuilder())
-keyboard_user.row(*[KeyboardButton(text=bt) for bt in LEXICON_keyboard["button"][1:]], width=2)
+keyboard_user.row(*[KeyboardButton(text=bt) for bt in LEXICON_keyboard["button"][-3:]], width=2)
 
 # keyboard for creator
 keyboard_creator = (ReplyKeyboardBuilder())
-keyboard_creator.row(*[KeyboardButton(text=bt) for bt in LEXICON_keyboard["button"]], width=1)
+keyboard_creator.row(*[KeyboardButton(text=bt) for bt in LEXICON_keyboard["button"]], width=2)
 
 # keyboard for change questionnaire
 keyboard_change = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(

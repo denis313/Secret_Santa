@@ -4,11 +4,12 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State, default_state
 from aiogram.types import Message, CallbackQuery, ReplyKeyboardRemove, UserProfilePhotos
 
-from LEXICON.lexicon import LEXICON_FSM, LEXICON_keyboard
+from LEXICON.lexicon import LEXICON_FSM, LEXICON_keyboard, LEXICON
 from config_data.config import DATABASE_URL
 from database.requests import DatabaseManager
 from filters.filter import IsAlpha
-from keyboards.general_keyboards import sex, sizes, keyboard_user, keyboard_start
+from handlers.general.message_profile import profile
+from keyboards.general_keyboards import sex, sizes, keyboard_start
 
 router = Router()
 router.message.filter(IsAlpha())
@@ -162,14 +163,17 @@ async def add_trips(message: Message, state: FSMContext, bot: Bot):
     id_user, data, data["user_id"], data["photo"] = (message.from_user.id, await state.get_data(), message.from_user.id,
                                                      result.photos[0][0].file_id)
     await state.clear()
-    if not await db_manager.get_questionnaire_by_id(user_id=id_user):
-        # print('New questionnaire')
+    user_data = await db_manager.get_questionnaire_by_id(user_id=id_user)
+    secret_friend = await db_manager.get_user_by_id(user_id=id_user)
+    if not user_data:
+        # New questionnaire
         await db_manager.add_questionnaire(data)
-        await message.answer(LEXICON_FSM["end"], reply_markup=keyboard_user.as_markup(resize_keyboard=True))
     else:
-        # print('Update questionnaire')
+        # Update questionnaire
         await db_manager.update_questionnaire(user_id=id_user, questionnaire_data=data)
-        await message.answer(LEXICON_FSM["end"], reply_markup=keyboard_user.as_markup(resize_keyboard=True))
+        await profile(bot, data=user_data, id_user=secret_friend.id_secret_friend, text=LEXICON["change_profile"],
+                      keyboard=None)
+    await message.answer(LEXICON_FSM["end"])
 
 
 @router.message(StateFilter(Questionnaire.dream))
@@ -193,17 +197,18 @@ async def add_gift_list(callback: CallbackQuery, state: FSMContext):
 
 @router.message(StateFilter(GiftList.list))
 async def add_list(message: Message, state: FSMContext):
-    await state.update_data(user_id=message.from_user.id)
+    id_user = message.from_user.id
+    await state.update_data(user_id=id_user)
     await state.update_data(list=message.text)
     data = await state.get_data()
     await state.clear()
-    if not await db_manager.get_gift_list(user_id=message.from_user.id):
-        # print('New list')
+    if not await db_manager.get_gift_list(user_id=id_user):
+        # New list
         await db_manager.add_gift_list(data)
         await message.answer(LEXICON_FSM["end_list"])
     else:
-        # print('Update list')
-        await db_manager.update_gift_list(user_id=message.from_user.id, list_data=data)
+        # Update list
+        await db_manager.update_gift_list(user_id=id_user, list_data=data)
         await message.answer(LEXICON_FSM["end_list"])
 
 
