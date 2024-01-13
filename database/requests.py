@@ -1,4 +1,4 @@
-from sqlalchemy import select, exc
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 
 from database.model import User, Questionnaire, GiftList, Base
@@ -47,7 +47,8 @@ class DatabaseManager:
         async with self.async_session() as session:
             result = await session.execute(select(User))
             all_users = result.scalars()
-            users = [[user.id, user.user_id, user.chat_id, user.creator_id] for user in all_users]
+            users = [[user.id, user.user_id, user.chat_id, user.creator_id, user.game_status, user.id_secret_friend]
+                     for user in all_users]
             return users
 
     # get questionnaire by user_id from db

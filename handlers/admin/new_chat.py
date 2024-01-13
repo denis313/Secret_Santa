@@ -23,7 +23,6 @@ async def new_chat(message: Message, bot: Bot):
             # добавляем user_id, id_chat, creator_id в __tableuser__
             user_data = {"user_id": admin.user.id, "chat_id": id_chat, "creator_id": admin.user.id}
             if not await db_manager.get_user_by_id(user_id=admin.user.id):
-                print('new')
                 await db_manager.add_user(user_data)
                 await bot.send_message(admin.user.id, LEXICON_Creator["new_chat"],
                                        reply_markup=keyboard_creator.as_markup(resize_keyboard=True))

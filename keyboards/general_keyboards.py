@@ -1,6 +1,7 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, KeyboardButton
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
-from LEXICON.lexicon import LEXICON_keyboard
+
+from LEXICON.lexicon import LEXICON_keyboard, LEXICON
 
 btn_1 = InlineKeyboardButton(text=LEXICON_keyboard["keyboard_start_1"][0],
                              callback_data=LEXICON_keyboard["keyboard_start_1"][1])
@@ -16,7 +17,6 @@ read = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text=LEXICON_
 questionnaire = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(
     text=LEXICON_keyboard["questionnaire"][0],
     callback_data=LEXICON_keyboard["questionnaire"][1])]])
-
 
 next_questionnaire = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(
     text='Следующий вопрос',
@@ -60,3 +60,8 @@ keyboard_new_list = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(
 keyboard_change_list = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(
     text=LEXICON_keyboard["change_l"][0],
     callback_data=LEXICON_keyboard["change_l"][1])]])
+
+# keyboard for secret friend
+keyboard_friend = (ReplyKeyboardBuilder())
+(keyboard_friend.row(*[KeyboardButton(text=bt) for bt in LEXICON_keyboard["friend_button"]], width=2)).row(
+    KeyboardButton(text=LEXICON["menu"]))
