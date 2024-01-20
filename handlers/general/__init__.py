@@ -1,1 +1,1 @@
-from handlers.general import start_command, help_command
+from handlers.general import start_command

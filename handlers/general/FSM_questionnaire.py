@@ -9,7 +9,7 @@ from config_data.config import DATABASE_URL
 from database.requests import DatabaseManager
 from filters.filter import IsAlpha
 from handlers.general.message_profile import profile
-from keyboards.general_keyboards import sex, sizes, keyboard_start
+from keyboards.general_keyboards import sex, sizes, keyboard_start, keyboard_creator, keyboard_user
 
 router = Router()
 router.message.filter(IsAlpha())
@@ -173,7 +173,11 @@ async def add_trips(message: Message, state: FSMContext, bot: Bot):
         await db_manager.update_questionnaire(user_id=id_user, questionnaire_data=data)
         await profile(bot, data=user_data, id_user=secret_friend.id_secret_friend, text=LEXICON["change_profile"],
                       keyboard=None)
-    await message.answer(LEXICON_FSM["end"])
+    if secret_friend.creator_id:
+        keyboard = keyboard_creator.as_markup(resize_keyboard=True)
+    else:
+        keyboard = keyboard_user.as_markup(resize_keyboard=True)
+    await message.answer(LEXICON_FSM["end"], reply_markup=keyboard)
 
 
 @router.message(StateFilter(Questionnaire.dream))
@@ -208,10 +212,10 @@ async def add_list(message: Message, state: FSMContext, bot: Bot):
     else:
         # Update list
         await db_manager.update_gift_list(user_id=id_user, list_data=data)
-        user = await db_manager.get_user_by_id(user_id=id_user)
-        if user.id_secret_friend:
-            await bot.send_message(chat_id=user.id_secret_friend,
-                                   text=LEXICON_keyboard["change_gift_list_friend"].format(gift_list=data))
+        # user = await db_manager.get_user_by_id(user_id=id_user)
+        # if user.id_secret_friend:
+        #     await bot.send_message(chat_id=user.id_secret_friend,
+        #                            text=LEXICON_keyboard["change_gift_list_friend"].format(gift_list=data))
     await message.answer(LEXICON_FSM["end_list"])
 
 

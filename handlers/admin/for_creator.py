@@ -1,16 +1,18 @@
+import logging
+
 from aiogram import F, Router, Bot
 from aiogram.types import CallbackQuery, Message
 
-from LEXICON.lexicon import LEXICON_Creator, LEXICON_keyboard, LEXICON
+from LEXICON.lexicon import LEXICON_Creator, LEXICON_keyboard
 from config_data.config import DATABASE_URL
 from database.requests import DatabaseManager
 from filters.filter import IsPrivate, IsCreator
 from handlers.general.message_profile import profile
 from services.services import random_assignment
 
+logger = logging.getLogger(__name__)
 router = Router()
 router.message.filter(IsPrivate())
-router.message.filter(IsCreator())
 dsn = DATABASE_URL
 db_manager = DatabaseManager(dsn=dsn)
 
@@ -21,7 +23,10 @@ async def new_creator(callback: CallbackQuery):
     await callback.message.edit_text(text=LEXICON_Creator["creator_start"])
 
 
-@router.message(F.text == LEXICON_keyboard["button"][1])  # сделать проверку статуса у creator запущена ли игра
+logger.debug('Отладочная информация - НАЧАЛО ИГРЫ')
+
+
+@router.message(F.text == LEXICON_keyboard["button"][1])
 async def start_the_game(message: Message, bot: Bot):
     all_users = await db_manager.get_all_users()
     if all_users[0][4] == 1:

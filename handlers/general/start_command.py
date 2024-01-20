@@ -16,12 +16,12 @@ async def start(message: Message):
     await message.answer(text=LEXICON["start"], reply_markup=keyboard_start)
 
 
-@router.message(Command('rules'))
-async def start(message: Message, bot: Bot):
-    await message.answer(LEXICON["rules"], reply_markup=read)
-    await bot.delete_message(message.chat.id, message.message_id)
-
-
-@router.callback_query(F.data == 'read')
-async def new_creator(callback: CallbackQuery):
-    await callback.message.delete()
+# @router.message(Command('rules'))
+# async def start(message: Message, bot: Bot):
+#     await message.answer(LEXICON["rules"], reply_markup=read)
+#     await bot.delete_message(message.chat.id, message.message_id)
+#
+#
+# @router.callback_query(F.data == 'read')
+# async def new_creator(callback: CallbackQuery):
+#     await callback.message.delete()
