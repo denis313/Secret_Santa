@@ -2,6 +2,7 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeybo
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
 from LEXICON.lexicon import LEXICON_keyboard, LEXICON
+from keyboards.callback_data_classes import CallbackFactory
 
 btn_1 = InlineKeyboardButton(text=LEXICON_keyboard["keyboard_start_1"][0],
                              callback_data=LEXICON_keyboard["keyboard_start_1"][1])
@@ -65,3 +66,14 @@ keyboard_change_list = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButt
 keyboard_friend = (ReplyKeyboardBuilder())
 (keyboard_friend.row(*[KeyboardButton(text=bt) for bt in LEXICON_keyboard["friend_button"]], width=2)).row(
     KeyboardButton(text=LEXICON["menu"]))
+
+
+# keyboard for gift list
+def keyboard_list(user_id, gifts):
+    markup = InlineKeyboardMarkup(inline_keyboard=[[(InlineKeyboardButton(text=gift,
+                                                                          callback_data=(CallbackFactory(
+                                                                              user_id=user_id,
+                                                                              index=index
+                                                                          ).pack())))
+                                                    for index, gift in enumerate(gifts.split())]])
+    return markup

@@ -1,5 +1,6 @@
 from aiogram import Router, Bot, F
-from aiogram.filters import CommandStart, Command
+from aiogram.filters import CommandStart, Command, StateFilter
+from aiogram.fsm.state import default_state
 from aiogram.types import Message, CallbackQuery
 
 from LEXICON.lexicon import LEXICON
@@ -11,7 +12,7 @@ router = Router()
 router.message.filter(IsPrivate())
 
 
-@router.message(CommandStart())
+@router.message(CommandStart(), StateFilter(default_state))
 async def start(message: Message):
     await message.answer(text=LEXICON["start"], reply_markup=keyboard_start)
 

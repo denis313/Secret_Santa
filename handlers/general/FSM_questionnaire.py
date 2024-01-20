@@ -10,6 +10,7 @@ from database.requests import DatabaseManager
 from filters.filter import IsAlpha
 from handlers.general.message_profile import profile
 from keyboards.general_keyboards import sex, sizes, keyboard_start, keyboard_creator, keyboard_user
+from services.parsing import gift_list_generation
 
 router = Router()
 router.message.filter(IsAlpha())
@@ -216,6 +217,7 @@ async def add_list(message: Message, state: FSMContext, bot: Bot):
         # if user.id_secret_friend:
         #     await bot.send_message(chat_id=user.id_secret_friend,
         #                            text=LEXICON_keyboard["change_gift_list_friend"].format(gift_list=data))
+    gift_list_generation(gift=message.text, user_id=id_user)
     await message.answer(LEXICON_FSM["end_list"])
 
 

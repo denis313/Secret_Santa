@@ -64,20 +64,20 @@ def prepare_items(response) -> list:
     return products
 
 
-def main():
-    response = get_categories()
+def gift_list_generation(gift, user_id):
+    response = get_categories(query=gift)
     list_products = prepare_items(response=response)
-    with open('gift_list.json', 'w') as file:
+    with open(f'services/gift_list{user_id}.json', 'w') as file:
         json.dump(list_products, file)
 
 
-def read_json():
-    with open('C:/Users/evtus/PycharmProjects/Secret_Santa/services/gift_list.json', 'r') as file:
+def read_json(user_id):
+    with open(f'services/gift_list{user_id}.json', 'r') as file:
         data = json.load(file)
     sorted_dict = sorted(data, key=lambda items: items["price"])
     return sorted_dict
 
 
 # if __name__ == '__main__':
-#     # main()
+#     main()
 #     print(read_json()[0], read_json()[-1])
