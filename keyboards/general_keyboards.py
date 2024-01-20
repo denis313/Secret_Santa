@@ -36,7 +36,7 @@ sizes = ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text='S'),
 
 # keyboard for user
 keyboard_user = (ReplyKeyboardBuilder())
-keyboard_user.row(*[KeyboardButton(text=bt) for bt in LEXICON_keyboard["button"][-3:]], width=2)
+keyboard_user.row(*[KeyboardButton(text=bt) for bt in LEXICON_keyboard["button"][2:5]], width=2)
 
 # keyboard for creator
 keyboard_creator = (ReplyKeyboardBuilder())
