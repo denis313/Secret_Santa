@@ -1,7 +1,11 @@
-# парсиинг магазинов для списков подарков
+# парсиинг магазинов для списков подарко
 import json
-
+from config_data.config import DATABASE_URL
+from database.requests import DatabaseManager
 import requests
+
+dsn = DATABASE_URL
+db_manager = DatabaseManager(dsn=dsn)
 
 
 def get_categories(query):
@@ -53,7 +57,8 @@ def prepare_items(response) -> list:
         for product in products_row:
             if product.get('supplierRating') > 4.5 and product.get('feedbacks') > 1000:
                 products.append({
-                    "id": product.get('id', None),
+                    "id_gift": product.get('id', None),
+                    "shop": 'Wildberries',
                     "brand": product.get('brand', None),
                     "name": product.get('name', None),
                     "price": product.get('salePriceU', None) / 100,
@@ -64,18 +69,27 @@ def prepare_items(response) -> list:
     return products
 
 
-def gift_list_generation(gift, user_id):
-    response = get_categories(query=gift)
-    list_products = prepare_items(response=response)
-    with open(f'services/gift_list{user_id}.json', 'w') as file:
-        json.dump(list_products, file)
+async def gift_list_generation(gifts, user_id):
+    for gift in gifts.split(','):
+        response = get_categories(query=gift)
+        list_products = prepare_items(response=response)
+        if list_products:
+            sorted_items = sorted(list_products, key=lambda item: item["price"])
+            cheapest_item, most_expensive_item = sorted_items[0], sorted_items[-1]
 
+            cheapest_item["user_id"] = user_id
+            cheapest_item["status"] = 'Дешевый'
+            await db_manager.add_generate_gift(gifts_data=cheapest_item)
 
-def read_json(user_id):
-    with open(f'services/gift_list{user_id}.json', 'r') as file:
-        data = json.load(file)
-    sorted_dict = sorted(data, key=lambda items: items["price"])
-    return sorted_dict
+            most_expensive_item["user_id"] = user_id
+            most_expensive_item["status"] = 'Дорогой'
+            await db_manager.add_generate_gift(gifts_data=most_expensive_item)
+
+# def read_json(user_id):
+#     with open(f'services/gift_list{user_id}.json', 'r') as file:
+#         data = json.load(file)
+#     sorted_dict = sorted(data, key=lambda items: items["price"])
+#     return sorted_dict
 
 
 # if __name__ == '__main__':

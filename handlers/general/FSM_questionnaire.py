@@ -191,9 +191,8 @@ class GiftList(StatesGroup):  # gift list for user
     list = State()  # user sex
 
 
-@router.callback_query(and_f(or_f(F.data == LEXICON_keyboard["new_list"][1],
-                                  F.data == LEXICON_keyboard["change_l"][1]),
-                             StateFilter(default_state)))
+@router.callback_query(or_f(F.data == LEXICON_keyboard["new_list"][1], F.data == LEXICON_keyboard["change_list"][1]),
+                             StateFilter(default_state))
 async def add_gift_list(callback: CallbackQuery, state: FSMContext):
     await state.set_state(GiftList.user_id)
     await state.set_state(GiftList.list)
@@ -201,10 +200,10 @@ async def add_gift_list(callback: CallbackQuery, state: FSMContext):
 
 
 @router.message(StateFilter(GiftList.list))
-async def add_list(message: Message, state: FSMContext, bot: Bot):
+async def add_list(message: Message, state: FSMContext):
     id_user = message.from_user.id
     await state.update_data(user_id=id_user)
-    await state.update_data(list=message.text)
+    await state.update_data(list=message.text.title())
     data = await state.get_data()
     await state.clear()
     if not await db_manager.get_gift_list(user_id=id_user):
@@ -217,7 +216,8 @@ async def add_list(message: Message, state: FSMContext, bot: Bot):
         # if user.id_secret_friend:
         #     await bot.send_message(chat_id=user.id_secret_friend,
         #                            text=LEXICON_keyboard["change_gift_list_friend"].format(gift_list=data))
-    gift_list_generation(gift=message.text, user_id=id_user)
+
+    await gift_list_generation(gifts=message.text.title(), user_id=id_user)
     await message.answer(LEXICON_FSM["end_list"])
 
 

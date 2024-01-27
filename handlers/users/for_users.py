@@ -1,4 +1,6 @@
 from aiogram import Router, F, Bot
+from aiogram.filters import StateFilter
+from aiogram.fsm.state import default_state
 from aiogram.types import CallbackQuery, Message
 
 from LEXICON.lexicon import LEXICON_user, LEXICON_keyboard, LEXICON
@@ -14,7 +16,7 @@ dsn = DATABASE_URL
 db_manager = DatabaseManager(dsn=dsn)
 
 
-@router.callback_query(F.data == LEXICON_keyboard["keyboard_start_2"][1])
+@router.callback_query(F.data == LEXICON_keyboard["keyboard_start_2"][1], StateFilter(default_state))
 async def for_new_user(callback: CallbackQuery):
     user = callback.from_user
     if await db_manager.get_user_by_id(user_id=user.id):
@@ -24,7 +26,7 @@ async def for_new_user(callback: CallbackQuery):
         await callback.message.edit_text(text=LEXICON_user["not_in_the_game"].format(name=user.first_name))
 
 
-@router.message(F.text == LEXICON_keyboard["button"][2])
+@router.message(F.text == LEXICON_keyboard["button"][2], StateFilter(default_state))
 async def your_questionnaire(message: Message, bot: Bot):
     user = message.from_user
     data = await db_manager.get_questionnaire_by_id(user.id)
@@ -36,13 +38,13 @@ async def your_questionnaire(message: Message, bot: Bot):
                              reply_markup=questionnaire)
 
 
-@router.message(F.text == LEXICON_keyboard["button"][3])
+@router.message(F.text == LEXICON_keyboard["button"][3], StateFilter(default_state))
 async def gift_list(message: Message):
     data = await db_manager.get_gift_list(user_id=message.from_user.id)
-    # print('Gift_list - ', data)
     if not data:
         await message.answer(LEXICON["normal_list"], reply_markup=keyboard_new_list)
         # print('Create list')
     else:
+        print('Gift_list - ', [data.list])
         await message.answer(LEXICON["gift_list"].format(gift_list=data.list), reply_markup=keyboard_change_list)
         # print('Gift List')

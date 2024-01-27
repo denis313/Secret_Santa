@@ -38,9 +38,7 @@ class IsDigit(BaseFilter):
 class IsCreator(BaseFilter):
     async def __call__(self, message: Message):
         users = await db_manager.get_all_users()
-        if message.from_user.id == users[0][1]:
-            return type(users[0][3]) == int
-        return False
+        return message.from_user.id == users[0][1]
 
 
 # class InGame(BaseFilter):
@@ -49,4 +47,4 @@ class IsCreator(BaseFilter):
 #         if user.game_status:
 #             return True
 #         else:
-#             return False
+#              False

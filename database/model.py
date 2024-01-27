@@ -21,6 +21,7 @@ class User(Base):
 
     questionnaires: Mapped[List["Questionnaire"]] = relationship(back_populates='user')
     gift_list: Mapped[List["GiftList"]] = relationship(back_populates='user')
+    generate_gifts: Mapped[List["GenerateGifts"]] = relationship(back_populates='user')
 
     def __repr__(self) -> str:
         ...
@@ -32,7 +33,7 @@ class Questionnaire(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id = mapped_column(ForeignKey('users.user_id', ondelete='CASCADE'),
-                                         nullable=False, unique=True)
+                            nullable=False, unique=True)
     photo: Mapped[str] = mapped_column()
     name: Mapped[str] = mapped_column()
     sex: Mapped[str] = mapped_column()
@@ -63,3 +64,25 @@ class GiftList(Base):
     def __repr__(self) -> str:
         ...
         return f"Giftlist(id={self.id}, user_id={self.user_id})"
+
+
+class GenerateGifts(Base):
+    __tablename__ = 'generate_gifts'
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id = mapped_column(ForeignKey('users.user_id', ondelete='CASCADE'),
+                            nullable=False)
+    status: Mapped[str] = mapped_column()
+    shop: Mapped[str] = mapped_column()
+    id_gift: Mapped[int] = mapped_column()
+    brand: Mapped[str] = mapped_column()
+    name: Mapped[str] = mapped_column()
+    price: Mapped[int] = mapped_column()
+    supplierRating: Mapped[float] = mapped_column()
+    feedbacks: Mapped[int] = mapped_column()
+
+    user: Mapped["User"] = relationship(back_populates='generate_gifts')
+
+    def __repr__(self) -> str:
+        ...
+        return f"GenerateGifts(id={self.id}, user_id={self.user_id})"

@@ -1,7 +1,7 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 
-from database.model import User, Questionnaire, GiftList, Base
+from database.model import User, Questionnaire, GiftList, Base, GenerateGifts
 
 
 class DatabaseManager:
@@ -35,6 +35,13 @@ class DatabaseManager:
             session.add(new_gift_list)
             await session.commit()
 
+    # add generate gifts from db
+    async def add_generate_gift(self, gifts_data):
+        async with self.async_session() as session:
+            new_gift_list = GenerateGifts(**gifts_data)
+            session.add(new_gift_list)
+            await session.commit()
+
     # get user by user_id from db
     async def get_user_by_id(self, user_id):
         async with self.async_session() as session:
@@ -65,6 +72,14 @@ class DatabaseManager:
             g_l = select(GiftList).filter(GiftList.user_id == user_id)
             result = await session.execute(g_l)
             gift_list = result.scalar()
+            return gift_list
+
+    # get generate gift by user_id from db
+    async def get_generate_gift(self, user_id):
+        async with self.async_session() as session:
+            g_l = select(GenerateGifts).filter(GenerateGifts.user_id == user_id)
+            result = await session.execute(g_l)
+            gift_list = result.scalars()
             return gift_list
 
     # update user by user_id from db

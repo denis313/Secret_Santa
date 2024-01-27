@@ -1,5 +1,5 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, KeyboardButton
-from aiogram.utils.keyboard import ReplyKeyboardBuilder
+from aiogram.utils.keyboard import ReplyKeyboardBuilder, InlineKeyboardBuilder
 
 from LEXICON.lexicon import LEXICON_keyboard, LEXICON
 from keyboards.callback_data_classes import CallbackFactory
@@ -59,8 +59,8 @@ keyboard_new_list = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(
 
 # keyboard for change list
 keyboard_change_list = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(
-    text=LEXICON_keyboard["change_l"][0],
-    callback_data=LEXICON_keyboard["change_l"][1])]])
+    text=LEXICON_keyboard["change_list"][0],
+    callback_data=LEXICON_keyboard["change_list"][1])]])
 
 # keyboard for secret friend
 keyboard_friend = (ReplyKeyboardBuilder())
@@ -70,10 +70,10 @@ keyboard_friend = (ReplyKeyboardBuilder())
 
 # keyboard for gift list
 def keyboard_list(user_id, gifts):
-    markup = InlineKeyboardMarkup(inline_keyboard=[[(InlineKeyboardButton(text=gift,
-                                                                          callback_data=(CallbackFactory(
-                                                                              user_id=user_id,
-                                                                              index=index
-                                                                          ).pack())))
-                                                    for index, gift in enumerate(gifts.split())]])
-    return markup
+    kb_builder = InlineKeyboardBuilder()
+    buttons: list[InlineKeyboardButton] = []
+    buttons.append([(InlineKeyboardButton(text=gift, callback_data=(CallbackFactory(user_id=user_id, index=index).pack()))) for index, gift in enumerate(gifts.split(','))])
+    kb_builder.row(*buttons, width=1)
+
+    # Возвращаем объект инлайн-клавиатуры
+    return kb_builder.as_markup()
