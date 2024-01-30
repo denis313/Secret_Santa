@@ -76,14 +76,12 @@ async def gift_list_generation(gifts, user_id):
         if list_products:
             sorted_items = sorted(list_products, key=lambda item: item["price"])
             cheapest_item, most_expensive_item = sorted_items[0], sorted_items[-1]
+            for item, status in [(cheapest_item, 'Дешевый'), (most_expensive_item, 'Дорогой')]:
+                item["gift"] = gift
+                item["user_id"] = user_id
+                item["status"] = status
 
-            cheapest_item["user_id"] = user_id
-            cheapest_item["status"] = 'Дешевый'
-            await db_manager.add_generate_gift(gifts_data=cheapest_item)
-
-            most_expensive_item["user_id"] = user_id
-            most_expensive_item["status"] = 'Дорогой'
-            await db_manager.add_generate_gift(gifts_data=most_expensive_item)
+                await db_manager.add_generate_gift(gifts_data=item)
 
 # def read_json(user_id):
 #     with open(f'services/gift_list{user_id}.json', 'r') as file:
