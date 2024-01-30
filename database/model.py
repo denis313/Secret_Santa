@@ -72,6 +72,7 @@ class GenerateGifts(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id = mapped_column(ForeignKey('users.user_id', ondelete='CASCADE'),
                             nullable=False)
+    gift: Mapped[str] = mapped_column()
     status: Mapped[str] = mapped_column()
     shop: Mapped[str] = mapped_column()
     id_gift: Mapped[int] = mapped_column()
