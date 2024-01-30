@@ -75,10 +75,12 @@ class DatabaseManager:
             return gift_list
 
     # get generate gift by user_id from db
-    async def get_generate_gift(self, user_id):
+    async def get_generate_gift(self, user_id, name_gift):
         async with self.async_session() as session:
-            g_l = select(GenerateGifts).filter(GenerateGifts.user_id == user_id)
-            result = await session.execute(g_l)
+            stmt = select(GenerateGifts).where(
+                (GenerateGifts.user_id == user_id) & (GenerateGifts.gift == name_gift)
+            )
+            result = await session.execute(stmt)
             gift_list = result.scalars()
             return gift_list
 
