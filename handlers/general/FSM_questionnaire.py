@@ -40,7 +40,6 @@ async def process_gender_press(message: Message, state: FSMContext):
 @router.callback_query(and_f(or_f(F.data == LEXICON_keyboard["questionnaire"][1],
                                   F.data == LEXICON_keyboard["change_b"][1]), StateFilter(default_state)))
 async def add_questionnaire(callback: CallbackQuery, state: FSMContext, bot: Bot):
-    # print(callback.data)
     await bot.edit_message_reply_markup(
         chat_id=callback.from_user.id,
         message_id=callback.message.message_id
