@@ -68,7 +68,7 @@ async def gift_details(callback: CallbackQuery, callback_data: CallbackFactory):
     id_user = callback_data.user_id
     gifts = await db_manager.get_generate_gift(user_id=id_user, name_gift=callback_data.gift)
     for gift in gifts:
-        await callback.message.reply(f"Подробности о подарке {gift.name}:\n"
+        await callback.message.reply(text=f"Подробности о подарке {gift.name}:\n"
                                      f"{gift.status} вариант: \n" +
                                      LEXICON["general_list"].format(id=gift.id_gift,
                                                                     brand=gift.brand,
