@@ -71,9 +71,8 @@ keyboard_friend = (ReplyKeyboardBuilder())
 # keyboard for gift list
 def keyboard_list(user_id, gifts):
     kb_builder = InlineKeyboardBuilder()
-    buttons: list[InlineKeyboardButton] = []
-    buttons.append([(InlineKeyboardButton(text=gift, callback_data=(CallbackFactory(user_id=user_id, index=index).pack()))) for index, gift in enumerate(gifts.split(','))])
-    kb_builder.row(*buttons, width=1)
-
+    kb_builder.row(*[(InlineKeyboardButton(text=gift,
+                                           callback_data=(CallbackFactory(user_id=user_id, index=index, gift=gift).pack())))
+                     for index, gift in enumerate(gifts.split(','))], width=1)
     # Возвращаем объект инлайн-клавиатуры
     return kb_builder.as_markup()
