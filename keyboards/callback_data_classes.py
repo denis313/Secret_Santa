@@ -5,3 +5,4 @@ from aiogram.filters.callback_data import CallbackData
 class CallbackFactory(CallbackData, prefix='gift', sep='-'):
     user_id: int
     index: int
+    gift: str
