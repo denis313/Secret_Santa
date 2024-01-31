@@ -17,7 +17,7 @@ dsn = DATABASE_URL
 db_manager = DatabaseManager(dsn=dsn)
 
 
-@router.message(F.text == LEXICON_keyboard["button"][1], IsCreator())
+@router.message(F.text == LEXICON_keyboard["button"][1])
 async def start_the_game(message: Message, bot: Bot):
     all_users = await db_manager.get_all_users()
     if len(all_users) > 1:

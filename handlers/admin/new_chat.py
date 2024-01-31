@@ -20,7 +20,7 @@ async def new_creator(callback: CallbackQuery):
 
 
 # регистрируем администратора  __tableuser__
-@router.message(F.content_type == 'new_chat_members')
+@router.message(F.content_type == 'new_chat_members', IsBot())
 async def new_chat(message: Message, bot: Bot):
     chat_members = await bot.get_chat_administrators(message.chat.id)
     id_chat = message.chat.id
