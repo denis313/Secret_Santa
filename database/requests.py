@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 
 from database.model import User, Questionnaire, GiftList, Base, GenerateGifts
@@ -50,9 +50,9 @@ class DatabaseManager:
             return user
 
     # get all users from db
-    async def get_all_users(self):
+    async def get_all_users(self, id_chat):
         async with self.async_session() as session:
-            result = await session.execute(select(User))
+            result = await session.execute(select(User).filter(User.chat_id == id_chat))
             all_users = result.scalars()
             users = [[user.id, user.user_id, user.chat_id, user.creator_id, user.game_status, user.id_secret_friend]
                      for user in all_users]
@@ -84,18 +84,21 @@ class DatabaseManager:
             gift_list = result.scalars()
             return gift_list
 
-    # update user by user_id from db
-    async def update_user(self, user_id, user_data):
+    # update user by user_id or chat_id from db
+
+    async def update_user(self, user_id=None, chat_id=None, user_data=None):
         async with self.async_session() as session:
-            user = select(User).filter(User.user_id == user_id)
-            result = await session.execute(user)
-            update_user = result.scalar()
+            # Проверяем, что передан хотя бы один из user_id или chat_id
+            if user_id is not None or chat_id is not None:
+                # Создаем выражение для обновления записи
+                stmt = update(User).where((User.user_id == user_id) | (User.chat_id == chat_id)).values(user_data)
 
-            if update_user:
-                for key, value in user_data.items():
-                    setattr(update_user, key, value)
-
+                # Выполняем обновление
+                await session.execute(stmt)
                 await session.commit()
+            else:
+                # Логика обработки ошибки или просто возвращение, в зависимости от вашего случая
+                print("Ошибка: Не передан user_id или chat_id")
 
     # update questionnaire by user_id from db
     async def update_questionnaire(self, user_id, questionnaire_data):
@@ -122,3 +125,10 @@ class DatabaseManager:
                     setattr(gift_list, key, value)
 
                 await session.commit()
+
+    # async def update_generate_gift(self, chat_id, list_data):
+    #     async with self.async_session() as session:
+    #         stmt = update(GenerateGifts).where(GenerateGifts.chat_id == chat_id).values(list_data)
+    #
+    #         await session.execute(stmt)
+    #         await session.commit()
