@@ -37,8 +37,8 @@ class IsDigit(BaseFilter):
 
 class IsCreator(BaseFilter):
     async def __call__(self, message: Message):
-        users = await db_manager.get_all_users()
-        return message.from_user.id == users[0][1]
+        user = await db_manager.get_user_by_id(user_id=message.from_user.id)
+        return user.creator_id
 
 
 # class InGame(BaseFilter):
