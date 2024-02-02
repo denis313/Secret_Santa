@@ -1,7 +1,7 @@
 import logging
 
 from aiogram import F, Router, Bot
-from aiogram.types import CallbackQuery, Message
+from aiogram.types import Message
 
 from LEXICON.lexicon import LEXICON_Creator, LEXICON_keyboard
 from config_data.config import DATABASE_URL
@@ -12,24 +12,44 @@ from services.services import random_assignment
 
 logger = logging.getLogger(__name__)
 router = Router()
-router.message.filter(IsPrivate())
+router.message.filter(IsPrivate(), IsCreator())
 dsn = DATABASE_URL
 db_manager = DatabaseManager(dsn=dsn)
 
 
 @router.message(F.text == LEXICON_keyboard["button"][1])
 async def start_the_game(message: Message, bot: Bot):
-    all_users = await db_manager.get_all_users()
+    user = await db_manager.get_user_by_id(user_id=message.from_user.id)
+    all_users = await db_manager.get_all_users(id_chat=user.chat_id)
     if len(all_users) > 1:
         if all_users[0][4] == 1:
             await message.answer(LEXICON_Creator["already_game"])
         else:
-            logger.debug('Отладочная информация - НАЧАЛО ИГРЫ')
+            logger.debug('Debug Information - STARTING THE GAME')
             for your_id, friend_id in random_assignment(all_users):
                 user_data = await db_manager.get_questionnaire_by_id(user_id=friend_id)
-                await db_manager.update_user(user_id=your_id, user_data={"id_secret_friend": friend_id, "game_status": 1})
+                await db_manager.update_user(user_id=your_id,
+                                             user_data={"id_secret_friend": friend_id, "game_status": 1})
                 if user_data:
                     await bot.send_message(chat_id=your_id, text=LEXICON_Creator["start_game"])
                     await profile(bot, data=user_data, id_user=your_id, text='', keyboard=None)
     else:
-        await message.answer('Мало игроков')
+        await message.answer(LEXICON_Creator["few_players"])
+
+
+@router.message(F.text == LEXICON_keyboard["button"][0])
+async def stop_the_game(message: Message, bot: Bot):
+    logger.debug('Debug Information - STARTING THE GAME')
+    data = {"game_status": None, "id_secret_friend": None}
+    user = await db_manager.get_user_by_id(user_id=message.from_user.id)
+    if user.game_status == 1:
+        await db_manager.update_user(chat_id=user.chat_id, user_data=data)
+        await bot.send_message(chat_id=user.chat_id, text=LEXICON_Creator["stop_game"])
+    else:
+        logger.debug('Debug Information - NoT THE GAME')
+        await message.answer('Игра еще не началась')
+
+
+@router.message(F.text == LEXICON_keyboard["button"][5])
+async def buying_places_play(message: Message):
+    print(message.from_user.id)
