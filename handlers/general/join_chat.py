@@ -17,7 +17,8 @@ db_manager = DatabaseManager(dsn=dsn)
 async def on_user_joined(message: Message, bot: Bot):
     new_user = message.new_chat_members[0]
     new_user_db = {'user_id': new_user.id, 'chat_id': message.chat.id}
-    users = await db_manager.get_all_users()
+    user = await db_manager.get_user_by_id(user_id=new_user.id)
+    users = await db_manager.get_all_users(id_chat=user.chat_id)
     if len(users) >= 15:
         await bot.send_message(chat_id=users[0][1], text=LEXICON_Creator["many_players"])
     else:
