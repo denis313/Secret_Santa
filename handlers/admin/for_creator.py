@@ -39,14 +39,12 @@ async def start_the_game(message: Message, bot: Bot):
 
 @router.message(F.text == LEXICON_keyboard["button"][0])
 async def stop_the_game(message: Message, bot: Bot):
-    logger.debug('Debug Information - STARTING THE GAME')
     data = {"game_status": None, "id_secret_friend": None}
     user = await db_manager.get_user_by_id(user_id=message.from_user.id)
     if user.game_status == 1:
         await db_manager.update_user(chat_id=user.chat_id, user_data=data)
         await bot.send_message(chat_id=user.chat_id, text=LEXICON_Creator["stop_game"])
     else:
-        logger.debug('Debug Information - NoT THE GAME')
         await message.answer('Игра еще не началась')
 
 
