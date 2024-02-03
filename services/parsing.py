@@ -71,10 +71,10 @@ def prepare_items(response) -> list:
 
 async def gift_list_generation(gifts, user_id):
     for gift in gifts.split(','):
-        response = get_categories(query=gift)
+        response = get_categories(query=gift.lower())
         list_products = prepare_items(response=response)
         if list_products:
-            sorted_items = sorted(list_products, key=lambda item: item["price"])
+            sorted_items = sorted(list_products, key=lambda item:item["price"])
             cheapest_item, most_expensive_item = sorted_items[0], sorted_items[-1]
             for item, status in [(cheapest_item, 'Дешевый'), (most_expensive_item, 'Дорогой')]:
                 item["gift"] = gift
