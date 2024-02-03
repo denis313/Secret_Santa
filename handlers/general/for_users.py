@@ -9,7 +9,7 @@ from database.requests import DatabaseManager
 from filters.filter import IsPrivate
 from handlers.general.message_profile import profile
 from keyboards.general_keyboards import questionnaire, keyboard_change_list, keyboard_new_list, keyboard_creator, \
-    keyboard_user
+    keyboard_user, keyboard_friend
 
 router = Router()
 router.message.filter(IsPrivate())
@@ -57,3 +57,8 @@ async def gift_list_secret_friend(message: Message):
         await message.answer('Хоу-хоу-хоу🎅', reply_markup=keyboard_creator.as_markup(resize_keyboard=True))
     else:
         await message.answer('Хоу-хоу-хоу🎅', reply_markup=keyboard_user.as_markup(resize_keyboard=True))
+
+
+@router.message(F.text == LEXICON_keyboard["button"][4], StateFilter(default_state))
+async def secret_friend(message: Message):
+    await message.answer(LEXICON_user["secret_friend"], reply_markup=keyboard_friend.as_markup(resize_keyboard=True))

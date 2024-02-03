@@ -19,11 +19,6 @@ dsn = DATABASE_URL
 db_manager = DatabaseManager(dsn=dsn)
 
 
-@router.message(F.text == LEXICON_keyboard["button"][4], StateFilter(default_state))
-async def secret_friend(message: Message):
-    await message.answer(LEXICON_user["secret_friend"], reply_markup=keyboard_friend.as_markup(resize_keyboard=True))
-
-
 @router.message(F.text == LEXICON_keyboard["friend_button"][0], StateFilter(default_state))
 async def profile_secret_friend(message: Message, bot: Bot):
     id_user = message.from_user.id
