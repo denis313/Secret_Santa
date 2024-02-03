@@ -103,28 +103,16 @@ class DatabaseManager:
     # update questionnaire by user_id from db
     async def update_questionnaire(self, user_id, questionnaire_data):
         async with self.async_session() as session:
-            update_questionnaire = select(Questionnaire).filter(Questionnaire.user_id == user_id)
-            result = await session.execute(update_questionnaire)
-            questionnaire = result.scalar()
-
-            if questionnaire:
-                for key, value in questionnaire_data.items():
-                    setattr(questionnaire, key, value)
-
-                await session.commit()
+            stmt = update(Questionnaire).where(Questionnaire.user_id == user_id).values(questionnaire_data)
+            await session.execute(stmt)
+            await session.commit()
 
     # update gift_list by user_id from db
     async def update_gift_list(self, user_id, list_data):
         async with self.async_session() as session:
-            update_list = select(GiftList).filter(GiftList.user_id == user_id)
-            result = await session.execute(update_list)
-            gift_list = result.scalar()
-
-            if gift_list:
-                for key, value in list_data.items():
-                    setattr(gift_list, key, value)
-
-                await session.commit()
+            stmt = update(GiftList).where(GiftList.user_id == user_id).values(list_data)
+            await session.execute(stmt)
+            await session.commit()
 
     # async def update_generate_gift(self, chat_id, list_data):
     #     async with self.async_session() as session:
