@@ -6,7 +6,7 @@ from aiogram.types import Message, CallbackQuery
 from LEXICON.lexicon import LEXICON_keyboard, LEXICON_user, LEXICON
 from config_data.config import DATABASE_URL
 from database.requests import DatabaseManager
-from filters.filter import IsPrivate
+from filters.filter import IsPrivate, InGame
 from handlers.general.message_profile import profile
 from keyboards.callback_data_classes import CallbackFactory
 from keyboards.general_keyboards import keyboard_friend, keyboard_user, keyboard_creator, keyboard_list
@@ -14,7 +14,7 @@ from keyboards.general_keyboards import keyboard_friend, keyboard_user, keyboard
 # from services.parsing import read_json
 
 router = Router()
-router.message.filter(IsPrivate())
+router.message.filter(IsPrivate(), InGame())
 dsn = DATABASE_URL
 db_manager = DatabaseManager(dsn=dsn)
 
@@ -37,32 +37,24 @@ async def gift_list_secret_friend(message: Message):
     id_user = message.from_user.id
     id_friend = await db_manager.get_user_by_id(user_id=id_user)
     data = await db_manager.get_gift_list(user_id=id_friend.id_secret_friend)
-    print(data.list.lower())
-    if data.list.lower() == "сюрприз":
-        await message.answer(LEXICON["surprise"].format(gift_list=data.list))
-    else:
-        await message.answer(LEXICON_keyboard["gift_list_friend"].format(gift_list=data.list))
+    if data is not None:
+        if data.list == "СЮРПРИЗ":
+            await message.answer(LEXICON["surprise"].format(gift_list=data.list))
+        else:
+            await message.answer(LEXICON_keyboard["gift_list_friend"].format(gift_list=data.list))
 
 
 @router.message(F.text == LEXICON_keyboard["friend_button"][2], StateFilter(default_state))
-async def gift_list_secret_friend(message: Message):
+async def generate_gift_list(message: Message):
     id_user = message.from_user.id
     id_friend = await db_manager.get_user_by_id(user_id=id_user)
     data = await db_manager.get_gift_list(user_id=id_friend.id_secret_friend)
-    print(data.list.lower())
-    if data.list.lower() == "сюрприз":
-        await message.answer(LEXICON["surprise"].format(gift_list=data.list))
-    else:
-        await message.reply(LEXICON["gifts"], reply_markup=keyboard_list(user_id=id_friend.id_secret_friend,
-                                                                         gifts=data.list))
-
-
-@router.message(F.text == LEXICON["menu"], StateFilter(default_state))
-async def gift_list_secret_friend(message: Message):
-    if (await db_manager.get_user_by_id(user_id=message.from_user.id)).creator_id:
-        await message.answer('Хоу-хоу-хоу🎅', reply_markup=keyboard_creator.as_markup(resize_keyboard=True))
-    else:
-        await message.answer('Хоу-хоу-хоу🎅', reply_markup=keyboard_user.as_markup(resize_keyboard=True))
+    if data is not None:
+        if data.list.lower() == "СЮРПРИЗ":
+            await message.answer(LEXICON["surprise"].format(gift_list=data.list))
+        else:
+            await message.reply(LEXICON["gifts"], reply_markup=keyboard_list(user_id=id_friend.id_secret_friend,
+                                                                             gifts=data.list))
 
 
 @router.callback_query(CallbackFactory.filter())
