@@ -41,10 +41,11 @@ class IsCreator(BaseFilter):
         return user.creator_id
 
 
-# class InGame(BaseFilter):
-#     async def __call__(self, message: Message) -> bool:
-#         user = await db_manager.get_user_by_id(user_id=message.from_user.id)
-#         if user.game_status:
-#             return True
-#         else:
-#              False
+class InGame(BaseFilter):
+    async def __call__(self, message: Message) -> bool:
+        user = await db_manager.get_user_by_id(user_id=message.from_user.id)
+        return user.game_status
+        # if user.game_status:
+        #     return True
+        # else:
+        #      False
