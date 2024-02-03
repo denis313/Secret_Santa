@@ -8,7 +8,8 @@ from config_data.config import DATABASE_URL
 from database.requests import DatabaseManager
 from filters.filter import IsPrivate
 from handlers.general.message_profile import profile
-from keyboards.general_keyboards import questionnaire, keyboard_change_list, keyboard_new_list
+from keyboards.general_keyboards import questionnaire, keyboard_change_list, keyboard_new_list, keyboard_creator, \
+    keyboard_user
 
 router = Router()
 router.message.filter(IsPrivate())
@@ -48,3 +49,11 @@ async def gift_list(message: Message):
         print('Gift_list - ', [data.list])
         await message.answer(LEXICON["gift_list"].format(gift_list=data.list), reply_markup=keyboard_change_list)
         # print('Gift List')
+
+
+@router.message(F.text == LEXICON["menu"], StateFilter(default_state))
+async def gift_list_secret_friend(message: Message):
+    if (await db_manager.get_user_by_id(user_id=message.from_user.id)).creator_id:
+        await message.answer('Хоу-хоу-хоу🎅', reply_markup=keyboard_creator.as_markup(resize_keyboard=True))
+    else:
+        await message.answer('Хоу-хоу-хоу🎅', reply_markup=keyboard_user.as_markup(resize_keyboard=True))
