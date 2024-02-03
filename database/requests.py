@@ -16,10 +16,14 @@ class DatabaseManager:
 
     # add new user from db
     async def add_user(self, user_data):
-        async with self.async_session() as session:
-            new_user = User(**user_data)
-            session.add(new_user)
-            await session.commit()
+        user_id = user_data.get('user_id')
+        if user_id:
+            print(f"Пользователь с user_id {user_id} уже существует.")
+        else:
+            async with self.async_session() as session:
+                new_user = User(**user_data)
+                session.add(new_user)
+                await session.commit()
 
     # add questionnaire for user from db
     async def add_questionnaire(self, questionnaire_data):
@@ -64,7 +68,7 @@ class DatabaseManager:
             query = select(Questionnaire).filter(Questionnaire.user_id == user_id)
             result = await session.execute(query)
             questionnaires = result.scalar()
-            return questionnaires
+            return questionnaires if questionnaires is not None else None
 
     # get gift list by user_id from db
     async def get_gift_list(self, user_id):
@@ -72,7 +76,7 @@ class DatabaseManager:
             g_l = select(GiftList).filter(GiftList.user_id == user_id)
             result = await session.execute(g_l)
             gift_list = result.scalar()
-            return gift_list
+            return gift_list if gift_list is not None else None
 
     # get generate gift by user_id from db
     async def get_generate_gift(self, user_id, name_gift):
