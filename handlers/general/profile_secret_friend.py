@@ -32,11 +32,10 @@ async def gift_list_secret_friend(message: Message):
     id_user = message.from_user.id
     id_friend = await db_manager.get_user_by_id(user_id=id_user)
     data = await db_manager.get_gift_list(user_id=id_friend.id_secret_friend)
-    if data is not None:
-        if data.list == "СЮРПРИЗ":
-            await message.answer(LEXICON["surprise"].format(gift_list=data.list))
-        else:
-            await message.answer(LEXICON_keyboard["gift_list_friend"].format(gift_list=data.list))
+    if data.list == "СЮРПРИЗ":
+        await message.answer(LEXICON["surprise"].format(gift_list=data.list))
+    else:
+        await message.answer(LEXICON_keyboard["gift_list_friend"].format(gift_list=data.list))
 
 
 @router.message(F.text == LEXICON_keyboard["friend_button"][2], StateFilter(default_state))
@@ -44,12 +43,11 @@ async def generate_gift_list(message: Message):
     id_user = message.from_user.id
     id_friend = await db_manager.get_user_by_id(user_id=id_user)
     data = await db_manager.get_gift_list(user_id=id_friend.id_secret_friend)
-    if data is not None:
-        if data.list.lower() == "СЮРПРИЗ":
-            await message.answer(LEXICON["surprise"].format(gift_list=data.list))
-        else:
-            await message.reply(LEXICON["gifts"], reply_markup=keyboard_list(user_id=id_friend.id_secret_friend,
-                                                                             gifts=data.list))
+    if data.list == "СЮРПРИЗ":
+        await message.answer(LEXICON["surprise"].format(gift_list=data.list))
+    else:
+        await message.reply(LEXICON["gifts"], reply_markup=keyboard_list(user_id=id_friend.id_secret_friend,
+                                                                         gifts=data.list))
 
 
 @router.callback_query(CallbackFactory.filter())
