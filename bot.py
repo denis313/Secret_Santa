@@ -6,8 +6,9 @@ from config_data.config import Config, load_config
 from handlers.general import start_command, FSM_questionnaire, profile_secret_friend, help_command, rules_command, \
     join_chat, for_users, is_not_handled
 from handlers.admin import for_creator, new_chat
+from middleware.trottling import ThrottlingMiddleware
 
-# Инициализируем логгер
+# Инициализируем логгер модуля
 logger = logging.getLogger(__name__)
 
 
@@ -16,8 +17,9 @@ async def main():
     # Конфигурируем логирование
     logging.basicConfig(
         level=logging.DEBUG,
-        format='%(filename)s:%(lineno)d #%(levelname)-8s '
-               '[%(asctime)s] - %(name)s - %(message)s')
+        format='[%(asctime)s] #%(levelname)-8s %(filename)s:'
+               '%(lineno)d - %(name)s - %(message)s'
+    )
 
     # Загружаем конфиг в переменную config
     config: Config = load_config()
@@ -36,6 +38,8 @@ async def main():
                        profile_secret_friend.router)
     dp.include_routers(is_not_handled.router)
 
+    # регистрация миддлвари
+    dp.update.middleware(ThrottlingMiddleware())
     # Пропускаем накопившиеся апдейты и запускаем polling
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
