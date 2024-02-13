@@ -43,7 +43,7 @@ async def your_questionnaire(message: Message, bot: Bot):
 async def gift_list(message: Message):
     data = await db_manager.get_gift_list(user_id=message.from_user.id)
     if not data:
-        await message.answer(LEXICON["normal_list"], reply_markup=keyboard_new_list)
+        await message.answer(LEXICON["new_list"], reply_markup=keyboard_new_list)
         # print('Create list')
     else:
         print('Gift_list - ', [data.list])

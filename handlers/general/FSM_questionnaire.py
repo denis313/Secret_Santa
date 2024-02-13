@@ -208,15 +208,16 @@ async def add_list(message: Message, state: FSMContext):
     if not await db_manager.get_gift_list(user_id=id_user):
         # New list
         await db_manager.add_gift_list(data)
+        await gift_list_generation(gifts=message.text, user_id=id_user)
     else:
         # Update list
         await db_manager.update_gift_list(user_id=id_user, list_data=data)
+        await db_manager.update_generate_gift(user_id=id_user, list_data=data)
         # user = await db_manager.get_user_by_id(user_id=id_user)
         # if user.id_secret_friend:
         #     await bot.send_message(chat_id=user.id_secret_friend,
         #                            text=LEXICON_keyboard["change_gift_list_friend"].format(gift_list=data))
-    if data["list"] != "СЮРПРИЗ":
-        await gift_list_generation(gifts=message.text, user_id=id_user)
+
     await message.answer(LEXICON_FSM["end_list"])
 
 
