@@ -39,7 +39,7 @@ async def main():
     dp.include_routers(is_not_handled.router)
 
     # регистрация миддлвари
-    dp.update.middleware(ThrottlingMiddleware())
+    # dp.update.middleware(ThrottlingMiddleware())
     # Пропускаем накопившиеся апдейты и запускаем polling
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
