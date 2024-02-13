@@ -1,6 +1,6 @@
-from sqlalchemy import select, update
+from sqlalchemy import select, update, delete
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
-
+from sqlalchemy.exc import IntegrityError
 from database.model import User, Questionnaire, GiftList, Base, GenerateGifts
 
 
@@ -16,14 +16,13 @@ class DatabaseManager:
 
     # add new user from db
     async def add_user(self, user_data):
-        user_id = user_data.get('user_id')
-        if user_id:
-            print(f"Пользователь с user_id {user_id} уже существует.")
-        else:
+        try:
             async with self.async_session() as session:
                 new_user = User(**user_data)
                 session.add(new_user)
                 await session.commit()
+        except IntegrityError:
+            print(f"Пользователь с user_id {user_data['user_id']} уже существует.")
 
     # add questionnaire for user from db
     async def add_questionnaire(self, questionnaire_data):
@@ -118,9 +117,18 @@ class DatabaseManager:
             await session.execute(stmt)
             await session.commit()
 
-    # async def update_generate_gift(self, chat_id, list_data):
-    #     async with self.async_session() as session:
-    #         stmt = update(GenerateGifts).where(GenerateGifts.chat_id == chat_id).values(list_data)
-    #
-    #         await session.execute(stmt)
-    #         await session.commit()
+    # update generate list by user_id from db
+    async def update_generate_gift(self, user_id, list_data):
+        async with self.async_session() as session:
+            stmt = update(GenerateGifts).where(GenerateGifts.user_id == user_id).values(list_data)
+
+            await session.execute(stmt)
+            await session.commit()
+
+    # delete generate list
+    async def delete_user(self, user_id):
+        async with self.async_session() as session:
+            stmt = delete(User).where(User.user_id == user_id)
+
+            await session.execute(stmt)
+            await session.commit()
