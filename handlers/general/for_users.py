@@ -1,3 +1,5 @@
+import logging
+
 from aiogram import Router, F, Bot
 from aiogram.filters import StateFilter
 from aiogram.fsm.state import default_state
@@ -31,7 +33,7 @@ async def for_new_user(callback: CallbackQuery):
 async def your_questionnaire(message: Message, bot: Bot):
     user = message.from_user
     data = await db_manager.get_questionnaire_by_id(user.id)
-    print('Profile - ', data)
+    logging.debug(f'Profile - {data}')
     if data:
         await profile(bot, data=data, id_user=user.id, text='')
     else:
@@ -44,11 +46,9 @@ async def gift_list(message: Message):
     data = await db_manager.get_gift_list(user_id=message.from_user.id)
     if not data:
         await message.answer(LEXICON["new_list"], reply_markup=keyboard_new_list)
-        # print('Create list')
     else:
-        print('Gift_list - ', [data.list])
+        logging.debug(f'Gift_list - {[data.list]}')
         await message.answer(LEXICON["gift_list"].format(gift_list=data.list), reply_markup=keyboard_change_list)
-        # print('Gift List')
 
 
 @router.message(F.text == LEXICON["menu"], StateFilter(default_state))

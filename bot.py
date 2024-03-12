@@ -15,11 +15,10 @@ logger = logging.getLogger(__name__)
 # Функция конфигурирования и запуска бота
 async def main():
     # Конфигурируем логирование
-    logging.basicConfig(
-        level=logging.DEBUG,
-        format='[%(asctime)s] #%(levelname)-8s %(filename)s:'
-               '%(lineno)d - %(name)s - %(message)s'
-    )
+    logging.basicConfig(level=logging.DEBUG,
+                        filename="py_log.log",
+                        filemode="w",
+                        format='[%(asctime)s] #%(levelname)-8s %(filename)s:%(lineno)d - %(name)s - %(message)s')
 
     # Загружаем конфиг в переменную config
     config: Config = load_config()

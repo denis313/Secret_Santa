@@ -1,3 +1,5 @@
+import logging
+
 from aiogram import F, Bot, Router
 from aiogram.filters import StateFilter, and_f, or_f
 from aiogram.fsm.context import FSMContext
@@ -29,6 +31,7 @@ class Questionnaire(StatesGroup):
     allergy = State()  # user allergy
     salty_or_sweet = State()  # favorite food
     dream = State()  # dream
+    stock = State()
 
 
 @router.message(F.text == LEXICON_keyboard["stop"], ~StateFilter(default_state))
@@ -207,12 +210,15 @@ async def add_list(message: Message, state: FSMContext):
     await state.clear()
     if not await db_manager.get_gift_list(user_id=id_user):
         # New list
+        logging.debug(f'New list: {data}')
         await db_manager.add_gift_list(data)
-        await gift_list_generation(gifts=message.text, user_id=id_user)
     else:
         # Update list
+        logging.debug(f'Update list: {data}')
         await db_manager.update_gift_list(user_id=id_user, list_data=data)
-        await db_manager.update_generate_gift(user_id=id_user, list_data=data)
+        await db_manager.delete_gifts(user_id=id_user)
+    logging.debug(f'Generate list: {message.text}')
+    await gift_list_generation(gifts=message.text, user_id=id_user)
         # user = await db_manager.get_user_by_id(user_id=id_user)
         # if user.id_secret_friend:
         #     await bot.send_message(chat_id=user.id_secret_friend,

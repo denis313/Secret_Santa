@@ -125,10 +125,18 @@ class DatabaseManager:
             await session.execute(stmt)
             await session.commit()
 
-    # delete generate list
+    # delete user
     async def delete_user(self, user_id):
         async with self.async_session() as session:
             stmt = delete(User).where(User.user_id == user_id)
+
+            await session.execute(stmt)
+            await session.commit()
+
+    # delete generate list
+    async def delete_gifts(self, user_id):
+        async with self.async_session() as session:
+            stmt = delete(GenerateGifts).where(GenerateGifts.user_id == user_id)
 
             await session.execute(stmt)
             await session.commit()
