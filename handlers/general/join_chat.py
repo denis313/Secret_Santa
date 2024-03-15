@@ -16,7 +16,7 @@ db_manager = DatabaseManager(dsn=dsn)
 @router.message(F.content_type == 'new_chat_members', ~IsBot())
 async def on_user_joined(message: Message, bot: Bot):
     new_user = message.new_chat_members[0]
-    new_user_db = {'user_id': new_user.id, 'chat_id': message.chat.id}
+    new_user_db = {'user_id': new_user.id, 'chat_id': message.chat.id, "subscription": 'zero'}
     # user = await db_manager.get_user_by_id(user_id=new_user.id)
     # print(user, '--')
     users = await db_manager.get_all_users(id_chat=new_user_db["chat_id"])
