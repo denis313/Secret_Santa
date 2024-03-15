@@ -18,6 +18,7 @@ class User(Base):
     creator_id = mapped_column(BigInteger)
     game_status = mapped_column(BigInteger)
     id_secret_friend = mapped_column(BigInteger)
+    subscription: Mapped[str] = mapped_column()
 
     questionnaires: Mapped[List["Questionnaire"]] = relationship(back_populates='user')
     gift_list: Mapped[List["GiftList"]] = relationship(back_populates='user')
@@ -45,6 +46,7 @@ class Questionnaire(Base):
     allergy: Mapped[str] = mapped_column()
     salty_or_sweet: Mapped[str] = mapped_column()
     dream: Mapped[str] = mapped_column()
+    stock: Mapped[int] = mapped_column()
     user: Mapped["User"] = relationship(back_populates='questionnaires')
 
     def __repr__(self) -> str:
