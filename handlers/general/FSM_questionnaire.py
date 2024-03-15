@@ -160,8 +160,20 @@ async def add_not_salty_or_sweet(message: Message):
 
 
 @router.message(StateFilter(Questionnaire.dream))
-async def add_trips(message: Message, state: FSMContext, bot: Bot):
+async def add_trips(message: Message, state: FSMContext):
     await state.update_data(dream=message.text)
+    await state.set_state(Questionnaire.stock)
+    await message.answer(LEXICON_FSM["stock"][0])
+
+
+@router.message(StateFilter(Questionnaire.dream))
+async def add_not_trips(message: Message):
+    await message.answer(LEXICON_FSM["dream"][1])
+
+
+@router.message(StateFilter(Questionnaire.stock), F.text.isdigit())
+async def add_trips(message: Message, state: FSMContext, bot: Bot):
+    await state.update_data(stock=int(message.text))
     result: UserProfilePhotos = await bot.get_user_profile_photos(message.from_user.id)
     id_user, data, data["user_id"], data["photo"] = (message.from_user.id, await state.get_data(), message.from_user.id,
                                                      result.photos[0][0].file_id)
@@ -183,9 +195,9 @@ async def add_trips(message: Message, state: FSMContext, bot: Bot):
     await message.answer(LEXICON_FSM["end"], reply_markup=keyboard)
 
 
-@router.message(StateFilter(Questionnaire.dream))
+@router.message(StateFilter(Questionnaire.stock))
 async def add_not_trips(message: Message):
-    await message.answer(LEXICON_FSM["dream"][1])
+    await message.answer(LEXICON_FSM["stock"][1])
 
 
 class GiftList(StatesGroup):  # gift list for user
