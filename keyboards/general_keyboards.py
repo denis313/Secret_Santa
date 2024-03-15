@@ -76,3 +76,10 @@ def keyboard_list(user_id, gifts):
                      for index, gift in enumerate(gifts.split(','))], width=1)
     # Возвращаем объект инлайн-клавиатуры
     return kb_builder.as_markup()
+
+
+# keyboard for stock
+keyboard_stock = InlineKeyboardBuilder()
+keyboard_stock.row(*[(InlineKeyboardButton(
+    text=key,
+    callback_data=name)) for key, name in LEXICON_keyboard["stock"].items()], width=1)
